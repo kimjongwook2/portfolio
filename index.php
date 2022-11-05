@@ -9,14 +9,14 @@
     <meta property="og:title" content="">
     <meta property="og:description" content="">
     <meta property="og:url" content="https://portfolio.github.io/">
-<!--    <meta property="og:image" content="">-->
-<!--    <link rel="shortcut icon" href="/img/favicon_main.ico">-->
+    <!--    <meta property="og:image" content="">-->
+    <!--    <link rel="shortcut icon" href="/img/favicon_main.ico">-->
     <title>포트폴리오 소개</title>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div>test 입니다.</div>
+<?php echo "tetsetsetsetset"; ?>
 </body>
 
 <script type="text/javascript" src="/js/script.js"></script>
