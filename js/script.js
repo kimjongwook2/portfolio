@@ -1,8 +1,9 @@
 /**
- * selector
+ * global variable
  */
-const topBtn = document.querySelector('#topBtn');
-const useToolImg = document.querySelectorAll('.tool');
+const topBtn = document.querySelector('.top-btn');
+const useSkill = document.querySelectorAll('.tool');
+// const useSkillImg = document.querySelectorAll('.tool img');
 
 /**
  * top button
@@ -25,21 +26,26 @@ document.addEventListener('scroll', () => {
 topBtn.addEventListener('click', goToTop);
 
 /**
- * top button
+ * use skill
  */
-useToolImg.forEach((el, i) => {
-    el.addEventListener('mouseover', () => {
-        console.log("aaa");
+useSkill.forEach((el, i) => {
+    // let dataSkill = useSkillImg[i].getAttribute('data-skill');
+    let dataSkill = el.getAttribute('data-skill');
+    let skillHtml = '' +
+        '<div class="skill skill-'+ i +'">' +
+            '<span>'+ dataSkill +'</span>' +
+        '</div>'
+
+    el.addEventListener('mouseenter', () => {
+        // el.insertAdjacentHTML('afterend', skillHtml);
+        el.innerHTML += skillHtml;
     })
 
-    el.addEventListener('mouseout', () => {
-        console.log("bbb");
+    el.addEventListener('mouseleave', () => {
+        document.querySelector('.skill-'+i).remove();
     })
 });
 
-/**
- * use tool
- */
 new Swiper('.swiper-tool-container.swiper-container', {
     slidesPerView: 5,
     spaceBetween: 10,
