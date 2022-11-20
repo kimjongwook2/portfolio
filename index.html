@@ -9,14 +9,21 @@
     <meta property="og:title" content="">
     <meta property="og:description" content="">
     <meta property="og:url" content="https://kimjongwook2.github.io/portfolio/">
-<!--    <meta property="og:image" content="">-->
-<!--    <link rel="shortcut icon" href="/img/favicon_main.ico">-->
+<!--    <meta property="og:image" content="https://kimjongwook2.github.io/portfolio/favicon.ico">-->
+<!--    <link rel="shortcut icon" href="./images/favicon.ico">-->
     <title>포트폴리오 소개</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.5.1/css/swiper.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
+    <header>
+        <div class="logo">
+            <a href="/">쫑</a>
+        </div>
+<!--        <nav></nav>-->
+    </header>
+
     <!-- portfolio introduce section -->
     <section class="section">
         <h2 class="title">
@@ -159,7 +166,35 @@
                     <strong>{</strong>
                 </dt>
                 <dd>
-                    <div class="json-type-2">test</div>
+                    <div class="json-type-2">
+                        <div>
+                            <div class="swiper-container swiper-tool-container">
+                                <div class="swiper-wrapper">
+                                    <div class="swiper-slide">
+                                        <div class="tool">
+                                            <img src="./images/tool/vultr.png" alt="vultr" />
+                                        </div>
+                                    </div>
+                                    <div class="swiper-slide">
+                                        <div class="tool">
+                                            <img src="./images/tool/dothome.png" alt="dothome" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="swiper-tool-arrow">
+                                    <div class="swiper-button-next">
+                                        <img src="./images/slide_next.svg" alt="다음" />
+                                    </div>
+                                    <div class="swiper-button-prev">
+                                        <img src="./images/slide_prev.svg" alt="이전" />
+                                    </div>
+                                </div>
+
+                                <div class="swiper-scrollbar"></div>
+                            </div>
+                        </div>
+                    </div>
                     <strong>}</strong>
                 </dd>
             </dl>
@@ -171,14 +206,26 @@
     <footer class="footer">
         <div class="footer-wrap">
             <dl>
-                <dt>test1</dt>
-                <dd>test1</dd>
-                <dt>test2</dt>
-                <dd>test2</dd>
+                <dt>함께 나누고 싶은 얘기가 있으시다면</dt>
+                <dd>
+                    <a href="mailto:jong-wook@naver.com">jong-wook@naver.com</a>
+                </dd>
+                <dd>메일을 보내주시면 평일 기준 3일 내로 답장을 드릴게요.</dd>
             </dl>
-            <div>©Copyright 2022. All right reserved</div>
+            <div class="footer-info">
+                <div class="footer-sns">
+                    <a href="https://github.com/kimjongwook2" target="_blank">GitHub</a>
+                    <a href="https://kimjongwook2.github.io/techblog/" target="_blank">Blog</a>
+                </div>
+                <div class="copyright">©Copyright 2022. All right reserved</div>
+            </div>
         </div>
     </footer>
+
+    <!-- top button -->
+    <button id="topBtn" class="top-btn" type="button">
+        <img src="./images/top_btn.svg" alt="top" />
+    </button>
 </body>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
