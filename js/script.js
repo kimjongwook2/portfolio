@@ -6,11 +6,67 @@ const useSkill = document.querySelectorAll('.tool');
 // const useSkillImg = document.querySelectorAll('.tool img');
 
 /**
- * top button
+ * global function
  */
 function scrollContainer() {
     return document.documentElement || document.body;
 }
+
+/**
+ * mousewheel event
+ * 사용한 곳 -
+ * 로고
+ */
+// let abcabc = document.querySelector('.logo');
+// let abcabc2 = document.querySelector('.header');
+//
+// function testtest() {
+//     abcabc.classList.add('hide');
+//     abcabc.animate(
+//         {
+//             transform: [
+//                 'translateX(0px)',
+//                 'translateX(300px)'
+//             ]
+//         },
+//         {
+//             duration: 500,
+//             fill: 'forwards',
+//             easing: 'ease'
+//         }
+//     );
+// }
+// function testtest2() {
+//     abcabc.classList.remove('hide');
+//     abcabc.animate(
+//         {
+//             transform: [
+//                 'translateX(300px)',
+//                 'translateX(0px)'
+//             ]
+//         },
+//         {
+//             duration: 500,
+//             fill: 'forwards',
+//             easing: 'ease'
+//         }
+//     );
+// }
+// document.addEventListener('mousewheel', (e) => {
+//     let wheelData = e.deltaY;
+//
+//     if(wheelData > 0) { // 휠 내릴때
+//         // console.log("내림");
+//         testtest();
+//     } else {
+//         // console.log("올림");
+//         testtest2();
+//     }
+// });
+
+/**
+ * top button
+ */
 function goToTop() {
     document.body.scrollIntoView({
         behavior: 'smooth'
@@ -33,19 +89,18 @@ useSkill.forEach((el, i) => {
     let dataSkill = el.getAttribute('data-skill');
     let skillHtml = '' +
         '<div class="skill skill-'+ i +'">' +
-            '<span>'+ dataSkill +'</span>' +
+            '<span>' + (dataSkill !== null ? dataSkill : "no skill") + '</span>' +
         '</div>'
 
     el.addEventListener('mouseenter', () => {
-        // el.insertAdjacentHTML('afterend', skillHtml);
-        el.innerHTML += skillHtml;
+        // el.innerHTML += skillHtml;
+        el.insertAdjacentHTML('afterbegin', skillHtml);
     })
 
     el.addEventListener('mouseleave', () => {
         document.querySelector('.skill-'+i).remove();
     })
 });
-
 new Swiper('.swiper-tool-container.swiper-container', {
     slidesPerView: 5,
     spaceBetween: 10,
