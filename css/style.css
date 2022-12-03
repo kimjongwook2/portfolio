@@ -36,10 +36,14 @@ h1, h2, h3, h4, h5, h6 { margin: 0; }
 dl, dd { margin: 0; }
 ul, li { margin: 0; padding: 0; font-size: 16px; list-style-type: none; }
 a { text-decoration: none; }
+a:active, a:focus {
+    outline: none;
+    /*color: #000000;*/
+}
 button, input, textarea { border: none; outline: 0; background: none; padding: 0; }
 p { line-height: 1.2; margin:0; font-size: 16px; }
 img { width: 100%; max-width: 100%; }
-section { width: 100%; max-width: 1280px; margin: 0 auto; }
+nav, section { width: 100%; max-width: 1280px; margin: 0 auto; }
 footer {
     display: flex;
     align-items: center;
@@ -107,7 +111,7 @@ footer {
 }
 
 /**
-    swiper common style
+    swiper slider common style
 */
 .swiper-button-next, .swiper-container-rtl .swiper-button-prev {
     background-image: unset;
@@ -131,15 +135,24 @@ footer {
     header style
 */
 .header {
+    position: fixed;
     width: 100%;
+    background: #000000;
+    z-index: 9999;
+}
+.nav-menu {
+    display: flex;
+}
+.nav-menu ul {
+    display: flex;
 }
 .logo {
-    position: fixed;
-    top: 0;
-    left: 50px;
-    transform: translateY(40px);
-    z-index: 9999;
-    transition: all 0.5s ease-in-out;
+    /*position: fixed;*/
+    /*top: 0;*/
+    /*left: 50px;*/
+    /*transform: translateY(40px);*/
+    /*z-index: 9999;*/
+    /*transition: all 0.5s ease-in-out;*/
 }
 .logo a {
     display: flex;
