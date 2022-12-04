@@ -4,7 +4,9 @@
 const topBtn = document.querySelector('.top-btn');
 const useSkill = document.querySelectorAll('.skill-box');
 // const useSkillImg = document.querySelectorAll('.skill-box img');
-const logo = document.querySelector('.logo');
+const header = document.querySelector('.header');
+const menuCategory = document.querySelectorAll('.menu-categories li');
+const loginBtn = document.querySelector('#loginBtn');
 
 /**
  * global function
@@ -20,9 +22,9 @@ document.addEventListener('mousewheel', (e) => {
     let wheelData = e.deltaY;
 
     if(wheelData > 0) { // 휠 내릴때
-        logo.id = 'hideTranslate';
-        // logo.classList.add('hideTranslate');
-        // logo.animate(
+        header.id = 'hideTranslate';
+        // header.classList.add('hideTranslate');
+        // header.animate(
         //     {
         //         transform: [
         //             'translateY(0px)',
@@ -36,32 +38,43 @@ document.addEventListener('mousewheel', (e) => {
         //     }
         // );
     } else {
-        logo.removeAttribute('id');
-        // logo.classList.remove('hideTranslate');
+        header.removeAttribute('id');
+        // header.classList.remove('hideTranslate');
     }
 });
 
 /**
- * top button
+ * menu scroll
  */
-function goToTop() {
-    document.body.scrollIntoView({
-        behavior: 'smooth'
+menuCategory.forEach((el, i) => {
+    el.addEventListener('click', (e) => {
+        let menuScroll = e.target.dataset.offset;
+        let menuTarget = document.querySelector(menuScroll);
+
+        el.classList.add('active');
+
+        if(menuScroll !== null) {
+            menuTarget.scrollIntoView({
+                behavior: 'smooth'
+            })
+        } else {
+            return;
+        }
     });
-}
-document.addEventListener('scroll', () => {
-    if (scrollContainer().scrollTop > 0) {
-        topBtn.classList.remove('opacity0');
-    } else {
-        topBtn.classList.add('opacity0');
-    }
+})
+
+/**
+ * login modal
+ */
+loginBtn.addEventListener('click', () => {
+    alert("준비중입니다.");
 });
-topBtn.addEventListener('click', goToTop);
 
 /**
  * use skill
  */
 useSkill.forEach((el, i) => {
+    // e.target.dataset.key
     // let dataSkill = useSkillImg[i].getAttribute('data-skill');
     let dataSkill = el.getAttribute('data-skill');
     let skillHtml = '' +
@@ -103,3 +116,20 @@ new Swiper('.swiper-tool-container.swiper-container', {
     //     },
     // },
 });
+
+/**
+ * top button
+ */
+function goToTop() {
+    document.body.scrollIntoView({
+        behavior: 'smooth'
+    });
+}
+document.addEventListener('scroll', () => {
+    if (scrollContainer().scrollTop > 0) {
+        topBtn.classList.remove('opacity0');
+    } else {
+        topBtn.classList.add('opacity0');
+    }
+});
+topBtn.addEventListener('click', goToTop);
