@@ -1,3 +1,5 @@
+console.log(firebase);
+
 /**
  * global variable
  */
@@ -15,6 +17,37 @@ const tabMenuContent = document.querySelectorAll('.tab-menu-content');
  */
 function scrollContainer() {
     return document.documentElement || document.body;
+}
+function modal(title, contents) {
+    const modalHtml = '' +
+        '<div id="modalBg"></div>' +
+        '<div class="modal-wrap">' +
+            '<div class="modal-close-btn">' +
+                '<button type="button" onclick="modalClose();">' +
+                    '<img src="./images/close.png" alt="" />' +
+                '</button>' +
+            '</div>' +
+            '<div class="modal">' +
+                '<div class="modal-title">' +
+                    '<h2>'+ title +'</h2>' +
+                '</div>' +
+                '<div class="modal-contents">' +
+                    ''+ contents +'' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    document.body.style.overflowY = 'hidden';
+
+    document.querySelector('#modalBg').addEventListener('mouseup', (e) => {
+        modalClose();
+    });
+}
+function modalClose() {
+    document.querySelector('#modalBg').remove();
+    document.querySelector('.modal-wrap').remove();
+    document.body.style.overflowY = 'auto';
 }
 
 /**
@@ -74,23 +107,31 @@ menuCategory.forEach((el, i) => {
  * login, join
  */
 loginBtn.addEventListener('click', () => {
-    let loginModalHtml = '' +
-        '<div id="modalBg"></div>' +
-        '<div class="modal login-modal">' +
-            '<button class="modal-close-btn" type="button" onclick="modalClose();">' +
-                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" fill="rgba(255,255,255,1)"/></svg>' +
-            '</button>' +
-            '<div>준비중</div>' +
-        '</div>';
+    modal(
+    '로그인을 해주세요 :)',
+'<div class="login-wrap">' +
+            '<div class="login-insert-box">' +
+                '<input type="email" value="" placeholder="이메일을(를) 입력해주세요." />' +
+                '<button id="loginGo" type="button">로그인</button>' +
+            '</div>' +
+            '<div class="login-info">' +
+                '<p>아직 회원이 아니신가요?</p>' +
+                '<button type="button" onclick="dawdawd(this);">회원가입</button>' +
+            '</div>' +
+        '</div>',
+    );
 
-    document.body.insertAdjacentHTML('beforeend', loginModalHtml);
-    document.body.style.overflowY = 'hidden';
+    // document.querySelector('#dawdawd').addEventListener('click', () => {
+    //
+    // });
 });
-function modalClose() {
-    document.querySelector('#modalBg').remove();
-    document.querySelector('.modal').remove();
-    document.body.style.overflowY = 'auto';
-}
+// function dawdawd(self) {
+    // self.closest('.modal').style.display = 'none';
+//     if(type === 'register') {
+//         document.querySelector('.login-info p').textContent = '계정이 이미 있으신가요?';
+//         self.textContent = '로그인';
+//     }
+// }
 
 /**
  * portfolio sites tab menu

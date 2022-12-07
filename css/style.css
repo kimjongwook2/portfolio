@@ -40,10 +40,12 @@ a:active, a:focus {
     outline: none;
     /*color: #000000;*/
 }
-button{cursor: pointer;}
-button, input, textarea {border: none; outline: 0; background: none; padding: 0;}
+button {cursor: pointer;}
+button, input, textarea {border: none; outline: 0; background: none; padding: 0; font-size: 16px; color: #ffffff;}
+input {width: 100%; height: 50px; border: 1px solid #666666; color: #ffffff; padding: 0 15px 0 15px;}
+input:focus {border: 1px solid #3e54d3;}
 p {line-height: 1.2; margin:0; font-size: 16px;}
-img {width: 100%; max-width: 100%;}
+img {max-width: 100%;}
 nav, section {width: 100%; max-width: 1280px; margin: 0 auto;}
 footer {
     display: flex;
@@ -122,7 +124,7 @@ footer {
     background: rgba(0, 0, 0, 0.85);
     z-index: 9998;
 }
-.modal {
+.modal-wrap {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -130,7 +132,15 @@ footer {
     width: 600px;
     height: auto;
     background: #1E1E1E;
+    padding: 20px 20px 20px 20px;
     z-index: 9999;
+}
+.modal-title {
+    margin: 0 0 20px 0;
+}
+.modal-close-btn {
+    margin: 0 0 20px 0;
+    text-align: right
 }
 
 /**
@@ -234,6 +244,31 @@ footer {
 }
 #hideTranslate {
     transform: translateY(-300px);
+}
+.login-wrap {
+
+}
+.login-insert-box {
+    display: flex;
+    align-items: center;
+    margin: 0 0 70px 0;
+}
+.login-insert-box input {
+
+}
+.login-insert-box button {
+    width: 20%;
+    height: 50px;
+    background: #3e54d3;
+}
+.login-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-info button {
+    margin: 0 0 0 5px;
+    color: #4fe0b6;
 }
 
 /**
