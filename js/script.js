@@ -1,16 +1,18 @@
-console.log(firebase);
-
 /**
  * global variable
  */
+const db = firebase.firestore();
+const auth = firebase.auth();
 const topBtn = document.querySelector('#topBtn');
 const useSkill = document.querySelectorAll('.skill-box');
 // const useSkillImg = document.querySelectorAll('.skill-box img');
 const header = document.querySelector('.header');
-const loginBtn = document.querySelector('#loginBtn');
+const signInBtn = document.querySelector('#signInBtn');
 const menuCategory = document.querySelectorAll('.menu-categories li');
 const tabMenuCategory = document.querySelectorAll('.tab-menu-categories li');
 const tabMenuContent = document.querySelectorAll('.tab-menu-content');
+
+console.log(auth);
 
 /**
  * global function
@@ -104,34 +106,57 @@ menuCategory.forEach((el, i) => {
 });
 
 /**
- * login, join
+ * sign in / sign up
  */
-loginBtn.addEventListener('click', () => {
+signInBtn.addEventListener('click', () => {
     modal(
     '로그인을 해주세요 :)',
-'<div class="login-wrap">' +
-            '<div class="login-insert-box">' +
+'<div class="switch-mode sign-auth-wrap">' +
+            '<div class="sign-in-box">' +
                 '<input type="email" value="" placeholder="이메일을(를) 입력해주세요." />' +
-                '<button id="loginGo" type="button">로그인</button>' +
+                '<button type="button" onclick="signInUp(this);">로그인하기</button>' +
             '</div>' +
-            '<div class="login-info">' +
+            '<div class="sign-info">' +
                 '<p>아직 회원이 아니신가요?</p>' +
-                '<button type="button" onclick="dawdawd(this);">회원가입</button>' +
+                '<button type="button" onclick="signUp(this);">회원가입</button>' +
             '</div>' +
         '</div>',
     );
-
-    // document.querySelector('#dawdawd').addEventListener('click', () => {
-    //
-    // });
 });
-// function dawdawd(self) {
-    // self.closest('.modal').style.display = 'none';
-//     if(type === 'register') {
-//         document.querySelector('.login-info p').textContent = '계정이 이미 있으신가요?';
-//         self.textContent = '로그인';
-//     }
-// }
+function signUp(self) {
+    self.closest('.sign-auth-wrap').classList.toggle('switch-mode');
+
+    if(self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
+        self.closest('.sign-auth-wrap button').textContent = '회원가입';
+        document.querySelector('.modal-title h2').textContent = '로그인을 해주세요 :)';
+        document.querySelector('.sign-info p').textContent = '아직 회원이 아니신가요?';
+        document.querySelector('.sign-up-box').className = 'sign-in-box';
+        document.querySelector('.sign-in-box button').textContent = '로그인하기';
+
+        document.querySelector('.dawdagbbb').remove();
+    } else if(!self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
+        self.closest('.sign-auth-wrap button').textContent = '로그인';
+        document.querySelector('.modal-title h2').textContent = '회원가입을 해주세요 :)';
+        document.querySelector('.sign-info p').textContent = '계정이 이미 있으신가요?';
+        document.querySelector('.sign-in-box').className = 'sign-up-box';
+        document.querySelector('.sign-up-box button').textContent = '가입하기';
+
+        let dddddxvxv = '' +
+            '<div class="dawdagbbb">' +
+                '<input type="text" value="" placeholder="이름을(를) 입력해주세요." />' +
+                '<input type="password" value="" placeholder="비밀번호을(를) 입력해주세요." />' +
+            '</div>';
+
+        document.querySelector('.sign-up-box').insertAdjacentHTML('afterbegin', dddddxvxv);
+    }
+}
+function signInUp(self) {
+    if(self.textContent === '로그인하기') {
+        alert('로그인하기');
+    } else if(self.textContent === '가입하기') {
+        alert('가입하기');
+    }
+}
 
 /**
  * portfolio sites tab menu
