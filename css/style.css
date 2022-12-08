@@ -42,7 +42,7 @@ a:active, a:focus {
 }
 button {cursor: pointer;}
 button, input, textarea {border: none; outline: 0; background: none; padding: 0; font-size: 16px; color: #ffffff;}
-input {width: 100%; height: 50px; border: 1px solid #666666; color: #ffffff; padding: 0 15px 0 15px;}
+input {width: 100%; height: 50px; border: 1px solid #666666; color: #ffffff; padding: 0 15px 0 15px; margin: 0 0 15px 0;}
 input:focus {border: 1px solid #3e54d3;}
 p {line-height: 1.2; margin:0; font-size: 16px;}
 img {max-width: 100%;}
@@ -190,14 +190,15 @@ footer {
 .nav-menu ul li {
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
+    text-transform: uppercase;
     position: relative;
     color: #ffffff;
     padding: 0 20px 0 20px;
     margin: 0 10px 0 10px;
     cursor: pointer;
 }
-.nav-menu ul li.active:not(.login-btn):before,
-.nav-menu ul li.active:not(.login-btn):after {
+.nav-menu ul li.active:not(.sign-in):before,
+.nav-menu ul li.active:not(.sign-in):after {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -205,18 +206,18 @@ footer {
     font-size: 34px;
     font-weight: 900;
 }
-.nav-menu ul li.active:not(.login-btn):before {
+.nav-menu ul li.active:not(.sign-in):before {
     content: "{";
     left: 0;
 }
-.nav-menu ul li.active:not(.login-btn):after {
+.nav-menu ul li.active:not(.sign-in):after {
     content: "}";
     right: 0;
 }
 .nav-menu ul li:last-child {
     margin: 0;
 }
-.nav-menu ul li.login-btn {
+.nav-menu ul li.sign-in {
     background: #3254d2;
     padding: 10px 20px 10px 20px;
     border-radius: 20px;
@@ -245,31 +246,48 @@ footer {
 #hideTranslate {
     transform: translateY(-300px);
 }
-.login-wrap {
 
-}
-.login-insert-box {
+/**
+    sign up / sign in style
+*/
+.sign-in-box {
     display: flex;
     align-items: center;
-    margin: 0 0 70px 0;
+    margin: 0 0 55px 0;
 }
-.login-insert-box input {
+.sign-in-box input {
 
 }
-.login-insert-box button {
+.sign-in-box button {
     width: 20%;
     height: 50px;
     background: #3e54d3;
+    margin: 0 0 15px 0;
 }
-.login-info {
+.sign-up-box {
+
+}
+.sign-up-box button {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+    width: 100%;
+    max-width: 200px;
+    height: 40px;
+    background: #3e54d3;
+    margin: 5px 0 50px 0;
+}
+.sign-info {
     display: flex;
     align-items: center;
     justify-content: center;
+    clear: both;
 }
-.login-info button {
+.sign-info button {
     margin: 0 0 0 5px;
     color: #4fe0b6;
 }
+
 
 /**
     about style
