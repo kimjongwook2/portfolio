@@ -1,22 +1,26 @@
 /**
  * global variable
  */
-const db = firebase.firestore();
-const auth = firebase.auth();
+const dbFireStore = firebase.firestore();
+const dbAuth = firebase.auth();
 const topBtn = document.querySelector('#topBtn');
 const useSkill = document.querySelectorAll('.skill-box');
 // const useSkillImg = document.querySelectorAll('.skill-box img');
 const header = document.querySelector('.header');
-const signInBtn = document.querySelector('#signInBtn');
+const signInOutBtn = document.querySelector('#signInOutBtn');
 const menuCategory = document.querySelectorAll('.menu-categories li');
 const tabMenuCategory = document.querySelectorAll('.tab-menu-categories li');
 const tabMenuContent = document.querySelectorAll('.tab-menu-content');
 
-console.log(auth);
+// console.log(dbFireStore);
+console.log(dbAuth);
 
 /**
  * global function
  */
+function reload() {
+    window.location.reload();
+}
 function scrollContainer() {
     return document.documentElement || document.body;
 }
@@ -42,9 +46,9 @@ function modal(title, contents) {
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     document.body.style.overflowY = 'hidden';
 
-    document.querySelector('#modalBg').addEventListener('mouseup', (e) => {
-        modalClose();
-    });
+    // document.querySelector('#modalBg').addEventListener('mouseup', (e) => {
+    //     modalClose();
+    // });
 }
 function modalClose() {
     document.querySelector('#modalBg').remove();
@@ -106,25 +110,44 @@ menuCategory.forEach((el, i) => {
 });
 
 /**
- * sign in / sign up
+ * sign in / sign up / sign logout
  */
-signInBtn.addEventListener('click', () => {
-    modal(
-    '로그인을 해주세요 :)',
-'<div class="switch-mode sign-auth-wrap">' +
-            '<div class="sign-in-box">' +
-                '<input type="email" value="" placeholder="이메일을(를) 입력해주세요." />' +
-                '<button type="button" onclick="signInUp(this);">로그인하기</button>' +
-            '</div>' +
-            '<div class="sign-info">' +
-                '<p>아직 회원이 아니신가요?</p>' +
-                '<button type="button" onclick="signUp(this);">회원가입</button>' +
-            '</div>' +
-        '</div>',
-    );
+dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
+    if(user) {
+        console.log("로그인 상태입니다.");
+
+        signInOutBtn.textContent = 'sign out';
+        signInOutBtn.addEventListener('click', () => {
+            dbAuth.signOut();
+            alert("로그아웃 되었습니다.");
+            reload();
+        });
+    } else {
+        console.log("로그인 상태가 아닙니다");
+
+        signInOutBtn.addEventListener('click', () => {
+            modal(
+            '로그인을 해주세요 :)',
+        '<div class="switch-mode sign-auth-wrap">' +
+                    '<div class="sign-in-box">' +
+                        '<input type="email" name="email" value="" autocomplete="off" placeholder="이메일을(를) 입력해주세요." />' +
+                        '<input type="password" name="password" value="" autocomplete="off" placeholder="패스워드을(를) 입력해주세요." />' +
+                        '<button class="sign-btn" type="button" onclick="signInUp(this);">로그인하기</button>' +
+                    '</div>' +
+                    '<div class="sign-info">' +
+                        '<p>아직 회원이 아니신가요?</p>' +
+                        '<button type="button" onclick="signUp(this);">회원가입</button>' +
+                    '</div>' +
+                '</div>',
+            );
+        });
+    }
 });
 function signUp(self) {
     self.closest('.sign-auth-wrap').classList.toggle('switch-mode');
+    document.querySelectorAll('input').forEach((el, i) => {
+        el.value = ''; // value값 초기화
+    });
 
     if(self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
         self.closest('.sign-auth-wrap button').textContent = '회원가입';
@@ -133,7 +156,9 @@ function signUp(self) {
         document.querySelector('.sign-up-box').className = 'sign-in-box';
         document.querySelector('.sign-in-box button').textContent = '로그인하기';
 
-        document.querySelector('.dawdagbbb').remove();
+        document.querySelector('input[name=name]').remove();
+        document.querySelector('.input-wrap').remove();
+        document.querySelector('.eyes').remove();
     } else if(!self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
         self.closest('.sign-auth-wrap button').textContent = '로그인';
         document.querySelector('.modal-title h2').textContent = '회원가입을 해주세요 :)';
@@ -141,20 +166,90 @@ function signUp(self) {
         document.querySelector('.sign-in-box').className = 'sign-up-box';
         document.querySelector('.sign-up-box button').textContent = '가입하기';
 
-        let dddddxvxv = '' +
-            '<div class="dawdagbbb">' +
-                '<input type="text" value="" placeholder="이름을(를) 입력해주세요." />' +
-                '<input type="password" value="" placeholder="비밀번호을(를) 입력해주세요." />' +
+        let inputName = '' +
+            '<input type="text" name="name" value="" autocomplete="off" placeholder="이름을(를) 입력해주세요." />';
+
+        let inputPassword = '' +
+            '<div class="input-wrap">' +
+                '<input type="password" name="re_password" value="" autocomplete="off" placeholder="패스워드을(를) 한번 더 입력해주세요." />' +
+                '<img class="eyes" src="./images/eyes_on.png" alt="" />' +
             '</div>';
 
-        document.querySelector('.sign-up-box').insertAdjacentHTML('afterbegin', dddddxvxv);
+        document.querySelector('.sign-up-box input[name=email]').insertAdjacentHTML('beforebegin', inputName);
+        document.querySelector('.sign-up-box input[name=password]').insertAdjacentHTML('afterend', inputPassword);
+        document.querySelector('.sign-up-box input[name=password]').insertAdjacentHTML('afterend', '<img class="eyes" src="./images/eyes_on.png" alt="" />');
+
+        document.querySelectorAll('.eyes').forEach((el, i) => {
+            el.addEventListener('click', () =>  {
+                let togglePassword = document.querySelectorAll('input[name=password], input[name=re_password]');
+
+                togglePassword.forEach((item) => {
+                    item.classList.toggle('active');
+
+                    document.querySelectorAll('.eyes').forEach((el) => {
+                        if(item.classList.contains('active') === true) {
+                            item.setAttribute('type', 'text');
+                            el.src = './images/eyes_off.png';
+                        } else {
+                            item.setAttribute('type', 'password');
+                            el.src = './images/eyes_on.png';
+                        }
+                    });
+                });
+            });
+        });
     }
 }
 function signInUp(self) {
+    let email = document.querySelector('input[name=email]').value;
+    let password = document.querySelector('input[name=password]').value;
+
     if(self.textContent === '로그인하기') {
-        alert('로그인하기');
+        if(!email) {
+            alert("이메일을(를) 입력해주세요.");
+            return false;
+        } else if(!password) {
+            alert("패스워드을(를) 입력해주세요.");
+            return false;
+        }
+
+        dbAuth.signInWithEmailAndPassword(email, password).then(result => {
+            console.log(result.user);
+            reload();
+        }).catch(error => {
+            alert("회원정보가 일치하지 않습니다.\n회원이 아니시라면 회원가입 후 이용해주세요.");
+        });
     } else if(self.textContent === '가입하기') {
-        alert('가입하기');
+        let name = document.querySelector('input[name=name]').value;
+        let re_password = document.querySelector('input[name=re_password]').value;
+
+        if(!name) {
+            alert("이름을(를) 입력해주세요.");
+            return false;
+        } else if(!email) {
+            alert("이메일을(를) 입력해주세요.");
+            return false;
+        } else if(!password || !re_password) {
+            alert("패스워드을(를) 입력해주세요.");
+            return false;
+        } else if(password !== re_password) {
+            alert("패스워드가 일치하지 않습니다.");
+            return false;
+        }
+
+        dbAuth.createUserWithEmailAndPassword(email, password).then(result => {
+            result.user.updateProfile({
+                displayName: name
+            }).then(() => {
+                // console.log(result.displayName);
+                // console.log(result.email);
+                console.log(result.user);
+                alert("회원가입이 완료되었습니다 :)");
+                reload();
+            });
+        }).catch(error => {
+            alert("회원가입에 실패하였습니다, 잠시 후 다시 시도해주세요\n" + error);
+        });
     }
 }
 
@@ -163,16 +258,16 @@ function signInUp(self) {
  */
 tabMenuCategory.forEach((el, i) => {
    el.addEventListener('click', () =>  {
-       tabMenuContent.forEach((el) => {
-           el.classList.remove('active');
-       });
-
        tabMenuCategory.forEach((el) => {
            el.classList.remove('active');
        });
 
-       tabMenuContent[i].classList.add('active');
+       tabMenuContent.forEach((el) => {
+           el.classList.remove('active');
+       });
+
        tabMenuCategory[i].classList.add('active');
+       tabMenuContent[i].classList.add('active');
    });
 });
 
