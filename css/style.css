@@ -135,6 +135,12 @@ footer {
     padding: 20px 20px 20px 20px;
     z-index: 9999;
 }
+modal {
+
+}
+.modal-contents {
+    position: relative;
+}
 .modal-title {
     margin: 0 0 20px 0;
 }
@@ -197,8 +203,8 @@ footer {
     margin: 0 10px 0 10px;
     cursor: pointer;
 }
-.nav-menu ul li.active:not(.sign-in):before,
-.nav-menu ul li.active:not(.sign-in):after {
+.nav-menu ul li.active:not(.sign-in-out):before,
+.nav-menu ul li.active:not(.sign-in-out):after {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -206,18 +212,18 @@ footer {
     font-size: 34px;
     font-weight: 900;
 }
-.nav-menu ul li.active:not(.sign-in):before {
+.nav-menu ul li.active:not(.sign-in-out):before {
     content: "{";
     left: 0;
 }
-.nav-menu ul li.active:not(.sign-in):after {
+.nav-menu ul li.active:not(.sign-in-out):after {
     content: "}";
     right: 0;
 }
 .nav-menu ul li:last-child {
     margin: 0;
 }
-.nav-menu ul li.sign-in {
+.nav-menu ul li.sign-in-out {
     background: #3254d2;
     padding: 10px 20px 10px 20px;
     border-radius: 20px;
@@ -250,32 +256,33 @@ footer {
 /**
     sign up / sign in style
 */
+.sign-btn {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+    width: 100%;
+    max-width: 160px;
+    height: 50px;
+    background: #3e54d3;
+    margin: 5px 0 50px 0;
+}
 .sign-in-box {
-    display: flex;
-    align-items: center;
-    margin: 0 0 55px 0;
+
 }
 .sign-in-box input {
 
 }
 .sign-in-box button {
-    width: 20%;
-    height: 50px;
-    background: #3e54d3;
-    margin: 0 0 15px 0;
+
 }
 .sign-up-box {
 
 }
+.sign-up-box input {
+
+}
 .sign-up-box button {
-    position: relative;
-    left: 50%;
-    transform: translate(-50%);
-    width: 100%;
-    max-width: 200px;
-    height: 40px;
-    background: #3e54d3;
-    margin: 5px 0 50px 0;
+
 }
 .sign-info {
     display: flex;
@@ -287,7 +294,12 @@ footer {
     margin: 0 0 0 5px;
     color: #4fe0b6;
 }
-
+.eyes {
+    position: absolute;
+    right: 10px;
+    margin: 13px 0 13px 0;
+    cursor: pointer;
+}
 
 /**
     about style
