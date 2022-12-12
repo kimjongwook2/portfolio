@@ -77,6 +77,12 @@ footer {
 .title strong {
     color: #3e54d3;
 }
+.sub-title-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
 .sub-title {
     font-size: 24px;
     font-weight: 400;
@@ -148,6 +154,12 @@ modal {
     margin: 0 0 20px 0;
     text-align: right
 }
+.btn-type-1 { /* 등록, */
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #3254d2;
+    padding: 10px 20px 10px 20px;
+    border-radius: 20px;
+}
 
 /**
     swiper slider common style
@@ -180,7 +192,7 @@ modal {
     width: 100%;
     background: #212226;
     transform: translateY(0px);
-    transition: all 0.3s ease-in-out;
+    transition: all 0.4s ease-in-out;
     z-index: 9997;
 }
 .nav-menu {
@@ -531,6 +543,9 @@ modal {
 .copyright a {
     color: #3e54d3;
     font-weight: 500;
+}
+.copyright p {
+    font-size: 14px;
 }
 
 /**

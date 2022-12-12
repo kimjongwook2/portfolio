@@ -3,6 +3,7 @@
  */
 const dbFireStore = firebase.firestore();
 const dbAuth = firebase.auth();
+let superAdmin = 'jong-wook@naver.com';
 const topBtn = document.querySelector('#topBtn');
 const useSkill = document.querySelectorAll('.skill-box');
 // const useSkillImg = document.querySelectorAll('.skill-box img');
@@ -11,6 +12,7 @@ const signInOutBtn = document.querySelector('#signInOutBtn');
 const menuCategory = document.querySelectorAll('.menu-categories li');
 const tabMenuCategory = document.querySelectorAll('.tab-menu-categories li');
 const tabMenuContent = document.querySelectorAll('.tab-menu-content');
+const portfolioSiteUpload = document.querySelector('#portfolioSiteUpload');
 
 // console.log(dbFireStore);
 console.log(dbAuth);
@@ -18,15 +20,12 @@ console.log(dbAuth);
 /**
  * global function
  */
-function reload() {
+function reload() { // 새로고침 함수
     window.location.reload();
 }
-function scrollContainer() {
-    return document.documentElement || document.body;
-}
-function modal(title, contents) {
+function modal(title, contents) { // 모달 함수
     const modalHtml = '' +
-        '<div id="modalBg"></div>' +
+        '<div id="modalBg" class="modal-bg"></div>' +
         '<div class="modal-wrap">' +
             '<div class="modal-close-btn">' +
                 '<button type="button" onclick="modalClose();">' +
@@ -46,14 +45,25 @@ function modal(title, contents) {
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     document.body.style.overflowY = 'hidden';
 
-    // document.querySelector('#modalBg').addEventListener('mouseup', (e) => {
-    //     modalClose();
-    // });
+    document.addEventListener('mousewheel', (e) => {
+        if(document.querySelector('#modalBg').classList.contains('modal-bg')) { // 모달이 있으면 header 움직이므로 버그 현상 막기 위함
+            header.removeAttribute('id');
+        }
+    });
 }
-function modalClose() {
+function modalClose() { // 모달 닫기 함수
     document.querySelector('#modalBg').remove();
     document.querySelector('.modal-wrap').remove();
     document.body.style.overflowY = 'auto';
+}
+function emailCheck(str) { // 이메일 정규식 체크 함수
+    let regEmail = /^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
+
+    if(!regEmail.test(str)) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 /**
@@ -113,7 +123,7 @@ menuCategory.forEach((el, i) => {
  * sign in / sign up / sign logout
  */
 dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
-    if(user) {
+    if (user) {
         console.log("로그인 상태입니다.");
 
         signInOutBtn.textContent = 'sign out';
@@ -130,7 +140,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
             '로그인을 해주세요 :)',
         '<div class="switch-mode sign-auth-wrap">' +
                     '<div class="sign-in-box">' +
-                        '<input type="email" name="email" value="" autocomplete="off" placeholder="이메일을(를) 입력해주세요." />' +
+                        '<input type="text" name="email" value="" autocomplete="off" placeholder="이메일을(를) 입력해주세요." />' +
                         '<input type="password" name="password" value="" autocomplete="off" placeholder="패스워드을(를) 입력해주세요." />' +
                         '<button class="sign-btn" type="button" onclick="signInUp(this);">로그인하기</button>' +
                     '</div>' +
@@ -201,45 +211,59 @@ function signUp(self) {
     }
 }
 function signInUp(self) {
-    let email = document.querySelector('input[name=email]').value;
-    let password = document.querySelector('input[name=password]').value;
+    let email = document.querySelector('input[name=email]');
+    let password = document.querySelector('input[name=password]');
 
-    if(self.textContent === '로그인하기') {
-        if(!email) {
+    if (self.textContent === '로그인하기') {
+        if(!email.value) {
             alert("이메일을(를) 입력해주세요.");
-            return false;
-        } else if(!password) {
+            email.focus();
+            return;
+        } else if(!emailCheck(email.value)) {
+            alert("이메일 형식이 올바르지 않습니다.");
+            email.focus();
+            return;
+        } else if(!password.value) {
             alert("패스워드을(를) 입력해주세요.");
-            return false;
+            password.focus();
+            return;
         }
 
-        dbAuth.signInWithEmailAndPassword(email, password).then(result => {
+        dbAuth.signInWithEmailAndPassword(email.value, password.value).then(result => {
             console.log(result.user);
             reload();
         }).catch(error => {
             alert("회원정보가 일치하지 않습니다.\n회원이 아니시라면 회원가입 후 이용해주세요.");
         });
-    } else if(self.textContent === '가입하기') {
-        let name = document.querySelector('input[name=name]').value;
-        let re_password = document.querySelector('input[name=re_password]').value;
+    } else if (self.textContent === '가입하기') {
+        let name = document.querySelector('input[name=name]');
+        let re_password = document.querySelector('input[name=re_password]');
 
-        if(!name) {
+        if (!name.value) {
             alert("이름을(를) 입력해주세요.");
-            return false;
-        } else if(!email) {
+            name.focus();
+            return;
+        } else if (!email.value) {
             alert("이메일을(를) 입력해주세요.");
-            return false;
-        } else if(!password || !re_password) {
+            email.focus();
+            return;
+        } else if (!emailCheck(email.value)) {
+            alert("이메일 형식이 올바르지 않습니다.");
+            email.focus();
+            return;
+        } else if (!password.value || !re_password.value) {
             alert("패스워드을(를) 입력해주세요.");
-            return false;
-        } else if(password !== re_password) {
+            password.focus();
+            return;
+        } else if (password.value !== re_password.value) {
             alert("패스워드가 일치하지 않습니다.");
-            return false;
+            re_password.focus();
+            return;
         }
 
-        dbAuth.createUserWithEmailAndPassword(email, password).then(result => {
+        dbAuth.createUserWithEmailAndPassword(email.value, password.value).then(result => {
             result.user.updateProfile({
-                displayName: name
+                displayName: name.value
             }).then(() => {
                 // console.log(result.displayName);
                 // console.log(result.email);
@@ -269,6 +293,27 @@ tabMenuCategory.forEach((el, i) => {
        tabMenuCategory[i].classList.add('active');
        tabMenuContent[i].classList.add('active');
    });
+});
+
+/**
+ * portfolio sites upload
+ */
+portfolioSiteUpload.textContent = '등록하기';
+portfolioSiteUpload.addEventListener('click', () => {
+    // dbAuth.onAuthStateChanged((user) => {
+    //     if (user) {
+    //         if (user.email === superAdmin) {
+    //             alert("관리자 입니다");
+    //             return;
+    //         } else {
+    //             alert("관리자만 등록이 가능합니다.\n관리자한테 문의 바랍니다.");
+    //             return;
+    //         }
+    //     } else {
+    //         alert("관리자만 등록이 가능합니다.\n관리자한테 문의 바랍니다.");
+    //         return;
+    //     }
+    // });
 });
 
 /**
@@ -321,7 +366,7 @@ new Swiper('.swiper-tool-container.swiper-container', {
  * top button
  */
 document.addEventListener('scroll', () => {
-    if (scrollContainer().scrollTop > 0) {
+    if (document.documentElement.scrollTop > 0 || document.body.scrollTop > 0) {
         topBtn.classList.remove('opacity0');
     } else {
         topBtn.classList.add('opacity0');
