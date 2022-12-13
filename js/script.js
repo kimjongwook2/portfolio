@@ -3,7 +3,9 @@
  */
 const dbFireStore = firebase.firestore();
 const dbAuth = firebase.auth();
-let superAdmin = 'jong-wook@naver.com';
+let superAdmin = ['jongwook2.kim@gmail.com', 'jong-wook@naver.com'];
+let isSuperAdmin, isModalBg = false;
+
 const topBtn = document.querySelector('#topBtn');
 const useSkill = document.querySelectorAll('.skill-box');
 // const useSkillImg = document.querySelectorAll('.skill-box img');
@@ -15,7 +17,8 @@ const tabMenuContent = document.querySelectorAll('.tab-menu-content');
 const portfolioSiteUpload = document.querySelector('#portfolioSiteUpload');
 
 // console.log(dbFireStore);
-console.log(dbAuth);
+// console.log(dbAuth);
+console.log(superAdmin);
 
 /**
  * global function
@@ -45,13 +48,15 @@ function modal(title, contents) { // 모달 함수
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     document.body.style.overflowY = 'hidden';
 
+    isModalBg = true;
     document.addEventListener('mousewheel', (e) => {
-        if(document.querySelector('#modalBg').classList.contains('modal-bg')) { // 모달이 있으면 header 움직이므로 버그 현상 막기 위함
+        if (isModalBg && document.querySelector('#modalBg').classList.contains('modal-bg')) { // header가 움직이므로 버그 현상 막기 위함
             header.removeAttribute('id');
         }
     });
 }
 function modalClose() { // 모달 닫기 함수
+    isModalBg = false;
     document.querySelector('#modalBg').remove();
     document.querySelector('.modal-wrap').remove();
     document.body.style.overflowY = 'auto';
@@ -59,7 +64,7 @@ function modalClose() { // 모달 닫기 함수
 function emailCheck(str) { // 이메일 정규식 체크 함수
     let regEmail = /^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
 
-    if(!regEmail.test(str)) {
+    if (!regEmail.test(str)) {
         return false;
     } else {
         return true;
@@ -72,7 +77,7 @@ function emailCheck(str) { // 이메일 정규식 체크 함수
 document.addEventListener('mousewheel', (e) => {
     let wheelData = e.deltaY;
 
-    if(wheelData > 0) { // 휠 내릴때
+    if (wheelData > 0) { // 휠 내릴때
         header.id = 'hideTranslate';
         // header.classList.add('hideTranslate');
         // header.animate(
@@ -109,7 +114,7 @@ menuCategory.forEach((el, i) => {
         // menuCategory[i].className += "active";
         menuCategory[i].classList.add('active');
 
-        if(menuScroll !== null) {
+        if (menuScroll !== null) {
             menuTarget.scrollIntoView({
                 behavior: 'smooth'
             })
@@ -125,6 +130,10 @@ menuCategory.forEach((el, i) => {
 dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
     if (user) {
         console.log("로그인 상태입니다.");
+
+        if (superAdmin.includes(user.email)) {
+            isSuperAdmin = true;
+        }
 
         signInOutBtn.textContent = 'sign out';
         signInOutBtn.addEventListener('click', () => {
@@ -159,7 +168,7 @@ function signUp(self) {
         el.value = ''; // value값 초기화
     });
 
-    if(self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
+    if (self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
         self.closest('.sign-auth-wrap button').textContent = '회원가입';
         document.querySelector('.modal-title h2').textContent = '로그인을 해주세요 :)';
         document.querySelector('.sign-info p').textContent = '아직 회원이 아니신가요?';
@@ -169,7 +178,7 @@ function signUp(self) {
         document.querySelector('input[name=name]').remove();
         document.querySelector('.input-wrap').remove();
         document.querySelector('.eyes').remove();
-    } else if(!self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
+    } else if (!self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
         self.closest('.sign-auth-wrap button').textContent = '로그인';
         document.querySelector('.modal-title h2').textContent = '회원가입을 해주세요 :)';
         document.querySelector('.sign-info p').textContent = '계정이 이미 있으신가요?';
@@ -197,7 +206,7 @@ function signUp(self) {
                     item.classList.toggle('active');
 
                     document.querySelectorAll('.eyes').forEach((el) => {
-                        if(item.classList.contains('active') === true) {
+                        if (item.classList.contains('active') === true) {
                             item.setAttribute('type', 'text');
                             el.src = './images/eyes_off.png';
                         } else {
@@ -210,20 +219,40 @@ function signUp(self) {
         });
     }
 }
+function focusTest(t) {
+    t.focus();
+    // t.classList.add('ddawgwagwag');
+    //
+    // if (document.focus()) {
+    //     t.style.border = '1px solid #fff';
+    // }
+    t.onblur = function() {
+        t.style.border = '1px solid #666';
+        t.classList.add('ddawgwagwag');
+    };
+    t.onfocus = function() {
+        // if (t.classList.contains('ddawgwagwag')) {
+        //     t.classList.remove('ddawgwagwag');
+        // }
+        t.style.border = '1px solid red';
+    };
+}
+
 function signInUp(self) {
     let email = document.querySelector('input[name=email]');
     let password = document.querySelector('input[name=password]');
 
     if (self.textContent === '로그인하기') {
-        if(!email.value) {
+        if (!email.value) {
             alert("이메일을(를) 입력해주세요.");
+            // focusTest(email);
             email.focus();
             return;
-        } else if(!emailCheck(email.value)) {
+        } else if (!emailCheck(email.value)) {
             alert("이메일 형식이 올바르지 않습니다.");
             email.focus();
             return;
-        } else if(!password.value) {
+        } else if (!password.value) {
             alert("패스워드을(를) 입력해주세요.");
             password.focus();
             return;
@@ -300,20 +329,11 @@ tabMenuCategory.forEach((el, i) => {
  */
 portfolioSiteUpload.textContent = '등록하기';
 portfolioSiteUpload.addEventListener('click', () => {
-    // dbAuth.onAuthStateChanged((user) => {
-    //     if (user) {
-    //         if (user.email === superAdmin) {
-    //             alert("관리자 입니다");
-    //             return;
-    //         } else {
-    //             alert("관리자만 등록이 가능합니다.\n관리자한테 문의 바랍니다.");
-    //             return;
-    //         }
-    //     } else {
-    //         alert("관리자만 등록이 가능합니다.\n관리자한테 문의 바랍니다.");
-    //         return;
-    //     }
-    // });
+    if (isSuperAdmin) {
+        alert("관리자 입니다");
+    } else {
+        alert("관리자만 등록이 가능합니다.\n관리자한테 문의 바랍니다.");
+    }
 });
 
 /**
