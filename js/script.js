@@ -1,31 +1,28 @@
 /**
- * global variable
+ * firebase config variable
  */
 const dbFireStore = firebase.firestore();
 const dbAuth = firebase.auth();
-let superAdmin = ['jongwook2.kim@gmail.com', 'jong-wook@naver.com'];
-let isSuperAdmin, isModalBg = false;
 
+/**
+ * global variable
+ */
 const topBtn = document.querySelector('#topBtn');
 const useSkill = document.querySelectorAll('.skill-box');
-// const useSkillImg = document.querySelectorAll('.skill-box img');
 const header = document.querySelector('.header');
 const signInOutBtn = document.querySelector('#signInOutBtn');
 const menuCategory = document.querySelectorAll('.menu-categories li');
 const tabMenuCategory = document.querySelectorAll('.tab-menu-categories li');
 const tabMenuContent = document.querySelectorAll('.tab-menu-content');
 const portfolioSiteUpload = document.querySelector('#portfolioSiteUpload');
+let superAdmin = ['jongwook2.kim@gmail.com', 'jong-wook@naver.com']; // 관리자 권한 이메일 설정
+let isSuperAdmin, isModalBg = false;
 
-// console.log(dbFireStore);
-// console.log(dbAuth);
 console.log(superAdmin);
 
 /**
  * global function
  */
-function reload() { // 새로고침 함수
-    window.location.reload();
-}
 function modal(title, contents) { // 모달 함수
     const modalHtml = '' +
         '<div id="modalBg" class="modal-bg"></div>' +
@@ -55,12 +52,41 @@ function modal(title, contents) { // 모달 함수
         }
     });
 }
+
 function modalClose() { // 모달 닫기 함수
     isModalBg = false;
     document.querySelector('#modalBg').remove();
     document.querySelector('.modal-wrap').remove();
     document.body.style.overflowY = 'auto';
 }
+
+// function popup(title, contents, btn) { // alert, confirm 함수, 함수명 windowMessage 지을지 고민
+//     const popupHtml = '' +
+//         '<div id="modalBg" class="modal-bg"></div>' +
+//         '<div class="modal-wrap">' +
+//             '<div class="modal-close-btn">' +
+//                 '<button type="button">' +
+//                     '<img src="./images/close.png" alt="" />' +
+//                 '</button>' +
+//                 '</div>' +
+//                 '<div class="modal">' +
+//                     '<div class="modal-title">' +
+//                     '<h2>'+ title +'</h2>' +
+//                 '</div>' +
+//                 '<div class="modal-contents">' +
+//                     ''+ contents +'' +
+//                 '</div>' +
+//             '</div>' +
+//         '</div>';
+//
+//     document.body.insertAdjacentHTML('beforeend', popupHtml);
+//     document.body.style.overflowY = 'hidden';
+// }
+
+function reload() { // 새로고침 함수
+    window.location.reload();
+}
+
 function emailCheck(str) { // 이메일 정규식 체크 함수
     let regEmail = /^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
 
@@ -162,6 +188,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
         });
     }
 });
+
 function signUp(self) {
     self.closest('.sign-auth-wrap').classList.toggle('switch-mode');
     document.querySelectorAll('input').forEach((el, i) => {
@@ -219,24 +246,6 @@ function signUp(self) {
         });
     }
 }
-function focusTest(t) {
-    t.focus();
-    // t.classList.add('ddawgwagwag');
-    //
-    // if (document.focus()) {
-    //     t.style.border = '1px solid #fff';
-    // }
-    t.onblur = function() {
-        t.style.border = '1px solid #666';
-        t.classList.add('ddawgwagwag');
-    };
-    t.onfocus = function() {
-        // if (t.classList.contains('ddawgwagwag')) {
-        //     t.classList.remove('ddawgwagwag');
-        // }
-        t.style.border = '1px solid red';
-    };
-}
 
 function signInUp(self) {
     let email = document.querySelector('input[name=email]');
@@ -245,7 +254,6 @@ function signInUp(self) {
     if (self.textContent === '로그인하기') {
         if (!email.value) {
             alert("이메일을(를) 입력해주세요.");
-            // focusTest(email);
             email.focus();
             return;
         } else if (!emailCheck(email.value)) {
@@ -340,7 +348,7 @@ portfolioSiteUpload.addEventListener('click', () => {
  * use skill
  */
 useSkill.forEach((el, i) => {
-    // let dataSkill = useSkillImg[i].getAttribute('data-skill');
+    // let dataSkill = useSkill[i].getAttribute('data-skill');
     let dataSkill = el.getAttribute('data-skill');
     let skillHtml = '' +
         '<div class="skill-view skill-view-'+ i +'">' +
@@ -356,6 +364,7 @@ useSkill.forEach((el, i) => {
         document.querySelector('.skill-view-'+i).remove();
     })
 });
+
 new Swiper('.swiper-tool-container.swiper-container', {
     slidesPerView: 5,
     spaceBetween: 10,
