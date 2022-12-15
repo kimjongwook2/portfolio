@@ -1,3 +1,5 @@
+// window.addEventListener('DOMContentLoaded', function() {
+
 /**
  * firebase config variable
  */
@@ -60,28 +62,46 @@ function modalClose() { // 모달 닫기 함수
     document.body.style.overflowY = 'auto';
 }
 
-// function popup(title, contents, btn) { // alert, confirm 함수, 함수명 windowMessage 지을지 고민
-//     const popupHtml = '' +
-//         '<div id="modalBg" class="modal-bg"></div>' +
-//         '<div class="modal-wrap">' +
-//             '<div class="modal-close-btn">' +
-//                 '<button type="button">' +
-//                     '<img src="./images/close.png" alt="" />' +
-//                 '</button>' +
-//                 '</div>' +
-//                 '<div class="modal">' +
-//                     '<div class="modal-title">' +
-//                     '<h2>'+ title +'</h2>' +
-//                 '</div>' +
-//                 '<div class="modal-contents">' +
-//                     ''+ contents +'' +
-//                 '</div>' +
-//             '</div>' +
-//         '</div>';
-//
-//     document.body.insertAdjacentHTML('beforeend', popupHtml);
-//     document.body.style.overflowY = 'hidden';
-// }
+function windowPopup(contents, cancelBtn) { // alert, confirm창 함수
+    const popupHtml = '' +
+        '<div id="popupBg" class="popup-bg"></div>' +
+        '<div class="popup-wrap">' +
+            '<div class="popup">' +
+                '<div class="popup-contents">' +
+                    '<p>'+ contents +'</p>' +
+                '</div>' +
+                '<div class="popup-btn-wrap">' +
+                    ''+ (cancelBtn !== undefined ? cancelBtn : '') +'' +
+                    '<button id="windowPopupOk" type="button">확인</button>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+    document.body.style.overflowY = 'hidden';
+
+    isModalBg = true;
+    document.addEventListener('mousewheel', (e) => {
+        if (isModalBg && document.querySelector('#popupBg').classList.contains('popup-bg')) { // header가 움직이므로 버그 현상 막기 위함
+            header.removeAttribute('id');
+        }
+    });
+
+    document.querySelector('#windowPopupCancel, #windowPopupOk').addEventListener('click', () => { // alert, confirm창 취소/확인
+        isModalBg = false;
+        document.querySelector('#popupBg').remove();
+        document.querySelector('.popup-wrap').remove();
+
+        document.body.style.overflowY = 'auto';
+        // if (document.querySelector('#modalBg').classList.contains('modal-bg')) {
+        //     document.body.style.overflowY = 'hidden';
+        //     console.log("aaa");
+        // } else {
+        //     document.body.style.overflowY = 'auto';
+        //     console.log("bbb");
+        // }
+    });
+}
 
 function reload() { // 새로고침 함수
     window.location.reload();
@@ -164,7 +184,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
         signInOutBtn.textContent = 'sign out';
         signInOutBtn.addEventListener('click', () => {
             dbAuth.signOut();
-            alert("로그아웃 되었습니다.");
+            windowPopup('로그아웃 되었습니다.');
             reload();
         });
     } else {
@@ -253,16 +273,16 @@ function signInUp(self) {
 
     if (self.textContent === '로그인하기') {
         if (!email.value) {
-            alert("이메일을(를) 입력해주세요.");
-            email.focus();
+            windowPopup('이메일을(를) 입력해주세요.');
+            // email.focus();
             return;
         } else if (!emailCheck(email.value)) {
-            alert("이메일 형식이 올바르지 않습니다.");
-            email.focus();
+            windowPopup('이메일 형식이 올바르지 않습니다.');
+            // email.focus();
             return;
         } else if (!password.value) {
-            alert("패스워드을(를) 입력해주세요.");
-            password.focus();
+            windowPopup('패스워드을(를) 입력해주세요.');
+            // password.focus();
             return;
         }
 
@@ -270,31 +290,31 @@ function signInUp(self) {
             console.log(result.user);
             reload();
         }).catch(error => {
-            alert("회원정보가 일치하지 않습니다.\n회원이 아니시라면 회원가입 후 이용해주세요.");
+            windowPopup('회원정보가 일치하지 않습니다.<br>회원이 아니시라면 회원가입 후 이용해주세요.');
         });
     } else if (self.textContent === '가입하기') {
         let name = document.querySelector('input[name=name]');
         let re_password = document.querySelector('input[name=re_password]');
 
         if (!name.value) {
-            alert("이름을(를) 입력해주세요.");
-            name.focus();
+            windowPopup('이름을(를) 입력해주세요.');
+            // name.focus();
             return;
         } else if (!email.value) {
-            alert("이메일을(를) 입력해주세요.");
-            email.focus();
+            windowPopup('이메일을(를) 입력해주세요.');
+            // email.focus();
             return;
         } else if (!emailCheck(email.value)) {
-            alert("이메일 형식이 올바르지 않습니다.");
-            email.focus();
+            windowPopup('이메일 형식이 올바르지 않습니다.');
+            // email.focus();
             return;
         } else if (!password.value || !re_password.value) {
-            alert("패스워드을(를) 입력해주세요.");
-            password.focus();
+            windowPopup('패스워드을(를) 입력해주세요.');
+            // password.focus();
             return;
         } else if (password.value !== re_password.value) {
-            alert("패스워드가 일치하지 않습니다.");
-            re_password.focus();
+            windowPopup('패스워드가 일치하지 않습니다.');
+            // re_password.focus();
             return;
         }
 
@@ -305,11 +325,11 @@ function signInUp(self) {
                 // console.log(result.displayName);
                 // console.log(result.email);
                 console.log(result.user);
-                alert("회원가입이 완료되었습니다 :)");
+                windowPopup('회원가입이 완료되었습니다 :)');
                 reload();
             });
         }).catch(error => {
-            alert("회원가입에 실패하였습니다, 잠시 후 다시 시도해주세요\n" + error);
+            windowPopup('회원가입에 실패하였습니다, 잠시 후 다시 시도해주세요.<br>' + error);
         });
     }
 }
@@ -338,9 +358,9 @@ tabMenuCategory.forEach((el, i) => {
 portfolioSiteUpload.textContent = '등록하기';
 portfolioSiteUpload.addEventListener('click', () => {
     if (isSuperAdmin) {
-        alert("관리자 입니다");
+        windowPopup('관리자 입니다');
     } else {
-        alert("관리자만 등록이 가능합니다.\n관리자한테 문의 바랍니다.");
+        windowPopup('관리자만 등록이 가능합니다.<br>관리자한테 문의 바랍니다.');
     }
 });
 
@@ -406,3 +426,4 @@ topBtn.addEventListener('click', () => {
         behavior: 'smooth'
     });
 });
+// });
