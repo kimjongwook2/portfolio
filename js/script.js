@@ -45,11 +45,10 @@ function modal(title, contents) { // 모달 함수
         '</div>';
 
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    document.body.style.overflowY = 'hidden';
 
     isModalBg = true;
     document.addEventListener('mousewheel', (e) => {
-        if (isModalBg && document.querySelector('#modalBg').classList.contains('modal-bg')) { // header가 움직이므로 버그 현상 막기 위함
+        if (isModalBg && document.querySelector('#modalBg').classList.contains('modal-bg')) { // scroll시 header가 움직이므로 버그 현상 막기 위함
             header.removeAttribute('id');
         }
     });
@@ -59,7 +58,6 @@ function modalClose() { // 모달 닫기 함수
     isModalBg = false;
     document.querySelector('#modalBg').remove();
     document.querySelector('.modal-wrap').remove();
-    document.body.style.overflowY = 'auto';
 }
 
 function windowPopup(contents, cancelBtn) { // alert, confirm창 함수
@@ -78,11 +76,11 @@ function windowPopup(contents, cancelBtn) { // alert, confirm창 함수
         '</div>';
 
     document.body.insertAdjacentHTML('beforeend', popupHtml);
-    document.body.style.overflowY = 'hidden';
 
     isModalBg = true;
+
     document.addEventListener('mousewheel', (e) => {
-        if (isModalBg && document.querySelector('#popupBg').classList.contains('popup-bg')) { // header가 움직이므로 버그 현상 막기 위함
+        if (isModalBg && document.querySelector('#popupBg').classList.contains('popup-bg')) { // scroll시 header가 움직이므로 버그 현상 막기 위함
             header.removeAttribute('id');
         }
     });
@@ -91,15 +89,6 @@ function windowPopup(contents, cancelBtn) { // alert, confirm창 함수
         isModalBg = false;
         document.querySelector('#popupBg').remove();
         document.querySelector('.popup-wrap').remove();
-
-        document.body.style.overflowY = 'auto';
-        // if (document.querySelector('#modalBg').classList.contains('modal-bg')) {
-        //     document.body.style.overflowY = 'hidden';
-        //     console.log("aaa");
-        // } else {
-        //     document.body.style.overflowY = 'auto';
-        //     console.log("bbb");
-        // }
     });
 }
 
@@ -179,31 +168,52 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
 
         if (superAdmin.includes(user.email)) {
             isSuperAdmin = true;
+
+            /**
+             * admin setting
+             */
+            if (isSuperAdmin) {
+                // portfolio sites upload
+                let portfolioSiteUploadHtml = '' +
+                    '<button class="btn-type-1" type="button">등록하기</button>';
+
+                portfolioSiteUpload.insertAdjacentHTML('afterbegin', portfolioSiteUploadHtml);
+            } else {
+
+            }
         }
 
         signInOutBtn.textContent = 'sign out';
         signInOutBtn.addEventListener('click', () => {
             dbAuth.signOut();
             windowPopup('로그아웃 되었습니다.');
-            reload();
+            document.querySelector('#windowPopupOk').addEventListener('click', () => {
+                reload();
+            });
         });
     } else {
         console.log("로그인 상태가 아닙니다");
 
         signInOutBtn.addEventListener('click', () => {
             modal(
-            '로그인을 해주세요 :)',
-        '<div class="switch-mode sign-auth-wrap">' +
-                    '<div class="sign-in-box">' +
-                        '<input type="text" name="email" value="" autocomplete="off" placeholder="이메일을(를) 입력해주세요." />' +
-                        '<input type="password" name="password" value="" autocomplete="off" placeholder="패스워드을(를) 입력해주세요." />' +
-                        '<button class="sign-btn" type="button" onclick="signInUp(this);">로그인하기</button>' +
-                    '</div>' +
-                    '<div class="sign-info">' +
+        '로그인을 해주세요 :)',
+    '<div class="switch-mode sign-auth-wrap">' +
+                '<div class="sign-in-box">' +
+                    '<input type="text" name="email" value="" autocomplete="off" placeholder="이메일을(를) 입력해주세요." />' +
+                    '<input type="password" name="password" value="" autocomplete="off" placeholder="패스워드을(를) 입력해주세요." />' +
+                    '<button class="sign-btn" type="button" onclick="signInUp(this);">로그인하기</button>' +
+                '</div>' +
+                '<div class="sign-info-box">' +
+                    '<div class="sign-info qa-member">' +
                         '<p>아직 회원이 아니신가요?</p>' +
                         '<button type="button" onclick="signUp(this);">회원가입</button>' +
                     '</div>' +
-                '</div>',
+                    '<div class="sign-info qa-password-find">' +
+                        '<p>패스워드를 잊어버리셨나요?</p>' +
+                        '<button type="button" onclick="javascript:windowPopup(`서비스 준비중입니다.`);">패스워드 찾기</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>',
             );
         });
     }
@@ -218,19 +228,21 @@ function signUp(self) {
     if (self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
         self.closest('.sign-auth-wrap button').textContent = '회원가입';
         document.querySelector('.modal-title h2').textContent = '로그인을 해주세요 :)';
-        document.querySelector('.sign-info p').textContent = '아직 회원이 아니신가요?';
+        document.querySelector('.qa-member p').textContent = '아직 회원이 아니신가요?';
         document.querySelector('.sign-up-box').className = 'sign-in-box';
         document.querySelector('.sign-in-box button').textContent = '로그인하기';
 
         document.querySelector('input[name=name]').remove();
         document.querySelector('.input-wrap').remove();
         document.querySelector('.eyes').remove();
+        document.querySelector('.qa-password-find').style.display = 'flex';
     } else if (!self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
         self.closest('.sign-auth-wrap button').textContent = '로그인';
         document.querySelector('.modal-title h2').textContent = '회원가입을 해주세요 :)';
-        document.querySelector('.sign-info p').textContent = '계정이 이미 있으신가요?';
+        document.querySelector('.qa-member p').textContent = '계정이 이미 있으신가요?';
         document.querySelector('.sign-in-box').className = 'sign-up-box';
         document.querySelector('.sign-up-box button').textContent = '가입하기';
+        document.querySelector('.qa-password-find').style.display = 'none';
 
         let inputName = '' +
             '<input type="text" name="name" value="" autocomplete="off" placeholder="이름을(를) 입력해주세요." />';
@@ -325,8 +337,11 @@ function signInUp(self) {
                 // console.log(result.displayName);
                 // console.log(result.email);
                 console.log(result.user);
+
                 windowPopup('회원가입이 완료되었습니다 :)');
-                reload();
+                document.querySelector('#windowPopupOk').addEventListener('click', () => {
+                    reload();
+                });
             });
         }).catch(error => {
             windowPopup('회원가입에 실패하였습니다, 잠시 후 다시 시도해주세요.<br>' + error);
@@ -350,18 +365,6 @@ tabMenuCategory.forEach((el, i) => {
        tabMenuCategory[i].classList.add('active');
        tabMenuContent[i].classList.add('active');
    });
-});
-
-/**
- * portfolio sites upload
- */
-portfolioSiteUpload.textContent = '등록하기';
-portfolioSiteUpload.addEventListener('click', () => {
-    if (isSuperAdmin) {
-        windowPopup('관리자 입니다');
-    } else {
-        windowPopup('관리자만 등록이 가능합니다.<br>관리자한테 문의 바랍니다.');
-    }
 });
 
 /**
