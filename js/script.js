@@ -46,6 +46,10 @@ function modal(title, contents) { // 모달 함수
 
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
+    // document.querySelector('#modalBg').addEventListener('mouseup', (e) => { // 모달 밖 영역 이벤트 실행
+    //     modalClose();
+    // });
+
     isModalBg = true;
     document.addEventListener('mousewheel', (e) => {
         if (isModalBg && document.querySelector('#modalBg').classList.contains('modal-bg')) { // scroll시 header가 움직이므로 버그 현상 막기 위함
@@ -210,7 +214,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
                     '</div>' +
                     '<div class="sign-info qa-password-find">' +
                         '<p>패스워드를 잊어버리셨나요?</p>' +
-                        '<button type="button" onclick="javascript:windowPopup(`서비스 준비중입니다.`);">패스워드 찾기</button>' +
+                        '<button type="button" onclick="passwordFind();">패스워드 재설정</button>' +
                     '</div>' +
                 '</div>' +
             '</div>',
@@ -222,7 +226,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
 function signUp(self) {
     self.closest('.sign-auth-wrap').classList.toggle('switch-mode');
     document.querySelectorAll('input').forEach((el, i) => {
-        el.value = ''; // value값 초기화
+        el.value = '';
     });
 
     if (self.closest('.sign-auth-wrap').classList.contains('switch-mode')) {
@@ -280,59 +284,59 @@ function signUp(self) {
 }
 
 function signInUp(self) {
-    let email = document.querySelector('input[name=email]');
-    let password = document.querySelector('input[name=password]');
+    let userEmail = document.querySelector('input[name=email]');
+    let userPassword = document.querySelector('input[name=password]');
 
     if (self.textContent === '로그인하기') {
-        if (!email.value) {
+        if (!userEmail.value) {
             windowPopup('이메일을(를) 입력해주세요.');
-            // email.focus();
+            // userEmail.focus();
             return;
-        } else if (!emailCheck(email.value)) {
+        } else if (!emailCheck(userEmail.value)) {
             windowPopup('이메일 형식이 올바르지 않습니다.');
-            // email.focus();
+            // userEmail.focus();
             return;
-        } else if (!password.value) {
+        } else if (!userPassword.value) {
             windowPopup('패스워드을(를) 입력해주세요.');
-            // password.focus();
+            // userPassword.focus();
             return;
         }
 
-        dbAuth.signInWithEmailAndPassword(email.value, password.value).then(result => {
+        dbAuth.signInWithEmailAndPassword(userEmail.value, userPassword.value).then(result => { // 로그인 시
             console.log(result.user);
             reload();
         }).catch(error => {
             windowPopup('회원정보가 일치하지 않습니다.<br>회원이 아니시라면 회원가입 후 이용해주세요.');
         });
     } else if (self.textContent === '가입하기') {
-        let name = document.querySelector('input[name=name]');
-        let re_password = document.querySelector('input[name=re_password]');
+        let userName = document.querySelector('input[name=name]');
+        let user_rePassword = document.querySelector('input[name=re_password]');
 
-        if (!name.value) {
+        if (!userName.value) {
             windowPopup('이름을(를) 입력해주세요.');
-            // name.focus();
+            // userName.focus();
             return;
-        } else if (!email.value) {
+        } else if (!userEmail.value) {
             windowPopup('이메일을(를) 입력해주세요.');
-            // email.focus();
+            // userEmail.focus();
             return;
-        } else if (!emailCheck(email.value)) {
+        } else if (!emailCheck(userEmail.value)) {
             windowPopup('이메일 형식이 올바르지 않습니다.');
-            // email.focus();
+            // userEmail.focus();
             return;
-        } else if (!password.value || !re_password.value) {
+        } else if (!userPassword.value || !user_rePassword.value) {
             windowPopup('패스워드을(를) 입력해주세요.');
-            // password.focus();
+            // userPassword.focus();
             return;
-        } else if (password.value !== re_password.value) {
+        } else if (userPassword.value !== user_rePassword.value) {
             windowPopup('패스워드가 일치하지 않습니다.');
-            // re_password.focus();
+            // user_rePassword.focus();
             return;
         }
 
-        dbAuth.createUserWithEmailAndPassword(email.value, password.value).then(result => {
+        dbAuth.createUserWithEmailAndPassword(userEmail.value, userPassword.value).then(result => { // 회원가입 시
             result.user.updateProfile({
-                displayName: name.value
+                displayName: userName.value
             }).then(() => {
                 // console.log(result.displayName);
                 // console.log(result.email);
@@ -344,9 +348,28 @@ function signInUp(self) {
                 });
             });
         }).catch(error => {
-            windowPopup('회원가입에 실패하였습니다, 잠시 후 다시 시도해주세요.<br>' + error);
+            windowPopup('회원가입에 실패하였습니다, 잠시 후 다시 시도해주세요.<br>' + error.message);
         });
+    } else if (self.textContent === '보내기') {
+        if (!emailCheck(userEmail.value)) {
+            windowPopup('이메일 형식이 올바르지 않습니다.');
+            return;
+        } else {
+            dbAuth.sendPasswordResetEmail(userEmail.value).then(() => { // 패스워드 재설정 시
+                windowPopup('해당 이메일로 링크를 전송하였습니다.<br>메일함을 확인해주세요.');
+            }).catch(error => {
+                windowPopup('잠시 후 다시 시도해주세요<br>' + error.message);
+            });
+        }
     }
+}
+
+function passwordFind() {
+    document.querySelector('.modal-title h2').textContent = '해당 이메일로 패스워드 재설정 링크를 전송합니다 :)';
+    document.querySelector('.sign-info-box').style.display = 'none';
+    document.querySelector('.sign-btn').textContent = '보내기';
+    document.querySelector('input[name=password]').style.display = 'none';
+    document.querySelector('input[name=email]').value = '';
 }
 
 /**
