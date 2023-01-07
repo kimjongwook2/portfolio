@@ -177,50 +177,80 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
              * admin auth
              */
             if (isSuperAdmin) {
-                // portfolio sites upload
+                /**
+                 * portfolio sites upload
+                 */
                 let portfolioSiteUploadHtml = '' +
-                    '<button id="portfolioSiteUploadBtn" class="btn-type-1" type="button">등록하기</button>';
+                    '<button id="portfolioSiteWriteBtn" class="btn-type-1" type="button">등록하기</button>';
 
                 portfolioSiteUpload.insertAdjacentHTML('afterbegin', portfolioSiteUploadHtml);
 
-                document.querySelector('#portfolioSiteUploadBtn').addEventListener('click', () => {
+                document.querySelector('#portfolioSiteWriteBtn').addEventListener('click', () => {
                     modal(
                     '프로젝트 등록을 해보세요 :)',
                     '<div class="">' +
-                        '<select class="modal-select" name="">' +
-                            '<option value="">카테고리 선택</option>' +
-                            '<option value="shopping mall">쇼핑몰</option>' +
-                            '<option value="hotel">호텔/팬션</option>' +
-                            '<option value="solution service">교육/IT솔루션 서비스</option>' +
-                            '<option value="semiconductor">제조장비 반도체산업</option>' +
-                            '<option value="etc">기타</option>' +
+                        '<select id="siteCategories" class="modal-select">' +
+                            '<option value="">분류 선택</option>' +
+                            '<option value="쇼핑몰">쇼핑몰</option>' +
+                            '<option value="호텔/팬션">호텔/팬션</option>' +
+                            '<option value="교육/IT솔루션 서비스">교육/IT솔루션 서비스</option>' +
+                            '<option value="제조장비 반도체산업">제조장비 반도체산업</option>' +
+                            '<option value="기타">기타</option>' +
                         '</select>' +
-                        '<select class="modal-select" name="">' +
+                        '<select id="siteType" class="modal-select">' +
                             '<option value="">유형 선택</option>' +
                             '<option value="WEB">WEB</option>' +
                             '<option value="WEB/APP">WEB/APP</option>' +
                         '</select>' +
-                        '<input type="text" name="" value="" autocomplete="off" placeholder="제목을(를) 입력해주세요." />' +
-                        '<textarea class="modal-textarea" placeholder="간략한 설명을(를) 입력해주세요."></textarea>' +
+                        '<input id="siteTitle" type="text" value="" autocomplete="off" placeholder="제목을(를) 입력해주세요." />' +
+                        '<textarea id="siteDescription" class="modal-textarea" placeholder="간략한 설명을(를) 입력해주세요."></textarea>' +
                         '<div class="file-box">' +
                             '<input class="file-name" value="첨부파일명" disabled>' +
                             '<label for="fileUpload">파일찾기</label>' +
                             '<input id="fileUpload" class="file-upload-hidden" type="file">' +
                         '</div>' +
                     '</div>' +
-                    '<div class="">' +
-                        '<button id="" class="modal-btn-type-1" type="button">등록하기</button>' +
-                    '</div>',
+                    '<button id="portfolioSiteUploadBtn" class="modal-btn-type-1" type="button">등록하기</button>',
                     );
 
-                    let fileTarget = document.querySelector('.file-upload-hidden');
-
-                    fileTarget.addEventListener('change', (e) => {
+                    document.querySelector('.file-upload-hidden').addEventListener('change', (e) => { // 첨부파일 등록
                         if (window.FileReader) {
-                            let file = e.target.files[0].name; // 파일명만 추출
+                            let fileTarget = e.target.files[0].name; // 파일명만 추출
 
-                            document.querySelector('.file-name').value = file;
+                            document.querySelector('.file-name').value = fileTarget;
                         }
+                    });
+
+                    let categoriesValue = '';
+                    let typeValue = '';
+                    let siteCategories = document.querySelector('#siteCategories');
+                    let siteType = document.querySelector('#siteType');
+
+                    siteCategories.addEventListener('change', () => { // select box 선택된것만
+                        let categoriesSelectValue = siteCategories.options[siteCategories.selectedIndex].value;
+
+                        categoriesValue = categoriesSelectValue
+                    });
+
+                    siteType.addEventListener('change', () => { // select box 선택된것만
+                        let categoriesSelectValue = siteType.options[siteType.selectedIndex].value;
+
+                        typeValue = categoriesSelectValue
+                    });
+
+                    document.querySelector('#portfolioSiteUploadBtn').addEventListener('click', () => { // 사이트 등록
+                        let dataSave = {
+                            categories: categoriesValue,
+                            type: typeValue,
+                            title: document.querySelector('#siteTitle').value,
+                            description: document.querySelector('#siteDescription').value,
+                        };
+
+                        dbFireStore.collection('site').add(dataSave).then((result) => {
+                            console.log("성공");
+                        }).catch((error) => {
+                            console.log(error.message);
+                        });
                     });
                 });
             } else {
