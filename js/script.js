@@ -174,14 +174,55 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
             isSuperAdmin = true;
 
             /**
-             * admin setting
+             * admin auth
              */
             if (isSuperAdmin) {
                 // portfolio sites upload
                 let portfolioSiteUploadHtml = '' +
-                    '<button class="btn-type-1" type="button">등록하기</button>';
+                    '<button id="portfolioSiteUploadBtn" class="btn-type-1" type="button">등록하기</button>';
 
                 portfolioSiteUpload.insertAdjacentHTML('afterbegin', portfolioSiteUploadHtml);
+
+                document.querySelector('#portfolioSiteUploadBtn').addEventListener('click', () => {
+                    modal(
+                    '프로젝트 등록을 해보세요 :)',
+                    '<div class="">' +
+                        '<select class="modal-select" name="">' +
+                            '<option value="">카테고리 선택</option>' +
+                            '<option value="shopping mall">쇼핑몰</option>' +
+                            '<option value="hotel">호텔/팬션</option>' +
+                            '<option value="solution service">교육/IT솔루션 서비스</option>' +
+                            '<option value="semiconductor">제조장비 반도체산업</option>' +
+                            '<option value="etc">기타</option>' +
+                        '</select>' +
+                        '<select class="modal-select" name="">' +
+                            '<option value="">유형 선택</option>' +
+                            '<option value="WEB">WEB</option>' +
+                            '<option value="WEB/APP">WEB/APP</option>' +
+                        '</select>' +
+                        '<input type="text" name="" value="" autocomplete="off" placeholder="제목을(를) 입력해주세요." />' +
+                        '<textarea class="modal-textarea" placeholder="간략한 설명을(를) 입력해주세요."></textarea>' +
+                        '<div class="file-box">' +
+                            '<input class="file-name" value="첨부파일명" disabled>' +
+                            '<label for="fileUpload">파일찾기</label>' +
+                            '<input id="fileUpload" class="file-upload-hidden" type="file">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="">' +
+                        '<button id="" class="modal-btn-type-1" type="button">등록하기</button>' +
+                    '</div>',
+                    );
+
+                    let fileTarget = document.querySelector('.file-upload-hidden');
+
+                    fileTarget.addEventListener('change', (e) => {
+                        if (window.FileReader) {
+                            let file = e.target.files[0].name; // 파일명만 추출
+
+                            document.querySelector('.file-name').value = file;
+                        }
+                    });
+                });
             } else {
 
             }
@@ -205,7 +246,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
                 '<div class="sign-in-box">' +
                     '<input type="text" name="email" value="" autocomplete="off" placeholder="이메일을(를) 입력해주세요." />' +
                     '<input type="password" name="password" value="" autocomplete="off" placeholder="패스워드을(를) 입력해주세요." />' +
-                    '<button class="sign-btn" type="button" onclick="signInUp(this);">로그인하기</button>' +
+                    '<button class="sign-btn modal-btn-type-1" type="button" onclick="signInUp(this);">로그인하기</button>' +
                 '</div>' +
                 '<div class="sign-info-box">' +
                     '<div class="sign-info qa-member">' +
