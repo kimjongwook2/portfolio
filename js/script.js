@@ -5,6 +5,8 @@
  */
 const dbFireStore = firebase.firestore();
 const dbAuth = firebase.auth();
+const dbStorage = firebase.storage(); // db에 이미지 저장
+const dbStorageRef = dbStorage.ref(); // db에 이미지 저장
 
 /**
  * global variable
@@ -167,6 +169,12 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
     if (user) {
         console.log("로그인 상태입니다.");
 
+        if (superAdmin.includes(user.email)) {
+            isSuperAdmin = true;
+        } else {
+            isSuperAdmin = false;
+        }
+
         /**
          * portfolio sites upload
          */
@@ -192,20 +200,12 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
                     '<input id="siteLink" type="text" value="" autocomplete="off" placeholder="포트폴리오 주소을(를) 입력해주세요." />' +
                     '<div class="file-box">' +
                         '<input class="file-name" value="첨부파일명" disabled>' +
-                        '<label for="fileUpload">파일찾기</label>' +
-                        '<input id="fileUpload" class="file-upload-hidden" type="file">' +
+                        '<label for="fileUploadFind">파일찾기</label>' +
+                        '<input id="fileUploadFind" class="file-upload-hidden" type="file">' +
                     '</div>' +
                 '</div>' +
                 '<button id="portfolioSiteUploadBtn" class="modal-btn-type-1" type="button">등록하기</button>',
             );
-
-            document.querySelector('.file-upload-hidden').addEventListener('change', (e) => { // 첨부파일 등록
-                if (window.FileReader) {
-                    let fileTarget = e.target.files[0].name; // 파일명만 추출
-
-                    document.querySelector('.file-name').value = fileTarget;
-                }
-            });
 
             let categoriesData = '';
             let typeData = '';
@@ -214,6 +214,8 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
             let siteTitle = document.querySelector('#siteTitle');
             let siteDescription = document.querySelector('#siteDescription');
             let siteLink = document.querySelector('#siteLink');
+            let fileNameTarget = document.querySelector('.file-name');
+            let fileUpload;
 
             siteCategories.addEventListener('change', () => { // 분류 select box 선택된것만
                 let categoriesSelectValue = siteCategories.options[siteCategories.selectedIndex].value;
@@ -227,29 +229,44 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
                 typeData = categoriesSelectValue
             });
 
+            document.querySelector('#fileUploadFind').addEventListener('change', (e) => { // 첨부파일 선택
+                if (window.FileReader) {
+                    let fileTarget = e.target.files[0]; // 파일 추출
+                    let fileName = e.target.files[0].name; // 파일명 추출
+
+                    fileNameTarget.value = fileName; // change 할때마다 파일명을 input에 insert
+                    fileUpload = dbStorageRef.child('images/portfolio/' + fileName).put(fileTarget);
+                }
+            });
+
             document.querySelector('#portfolioSiteUploadBtn').addEventListener('click', () => { // 포트폴리오 사이트 등록하기
-                if (superAdmin.includes(user.email)) {
-                    isSuperAdmin = true;
+                if (isSuperAdmin) {
+                    fileUpload.on('state_changed', null, (error) => { // 이미지 업로드 여부
+                        console.log('업로드중 실패하였습니다.\n잠시 후 다시 시도해주세요.', error.message);
+                    }, () => {
+                        fileUpload.snapshot.ref.getDownloadURL().then((url) => {
+                            console.log('정상적으로 업로드가 완료되었습니다.\n저장된 경로는', url);
 
-                    if (isSuperAdmin) {
-                        let dataSave = {
-                            categories: categoriesData, // 분류
-                            type: typeData, // 유형
-                            title: siteTitle.value, // 제목
-                            description: siteDescription.value, // 설명
-                            link: siteLink.value, // 주소
-                        };
+                            let dataSave = {
+                                categories: categoriesData, // 분류값
+                                type: typeData, // 유형값
+                                title: siteTitle.value, // 제목값
+                                description: siteDescription.value, // 설명값
+                                link: siteLink.value, // 주소값
+                                imageUrl: url, // 이미지 주소값
+                            };
 
-                        if (categoriesData !== '' && typeData !== '' && siteTitle.value !== '' && siteDescription.value !== '' && siteLink.value !== '') {
-                            dbFireStore.collection('site').add(dataSave).then((result) => {
-                                console.log("성공");
-                            }).catch((error) => {
-                                console.log(error.message);
-                            });
-                        } else {
-                            windowPopup('모든 항목에 선택/입력 해주세요.');
-                        }
-                    }
+                            if (categoriesData !== '' && typeData !== '' && siteTitle.value !== '' && siteDescription.value !== '' && siteLink.value !== '') {
+                                dbFireStore.collection('site').add(dataSave).then((result) => { // 데이터 저장 여부
+                                    console.log("성공");
+                                }).catch((error) => {
+                                    console.log(error.message);
+                                });
+                            } else {
+                                windowPopup('모든 항목에 선택/입력 해주세요.');
+                            }
+                        });
+                    });
                 } else {
                     windowPopup('관리자만 등록이 가능합니다.');
                 }
