@@ -11,12 +11,13 @@ const dbStorageRef = dbStorage.ref(); // db에 이미지 저장
 /**
  * global variable
  */
+const headerSelector = document.querySelector('.header');
+const titleSelector  = document.querySelectorAll('.title');
 const topBtn = document.querySelector('#topBtn');
-const useSkill = document.querySelectorAll('.skill-box');
-const header = document.querySelector('.header');
+const skillBox = document.querySelectorAll('.skill-box');
 const signInOutBtn = document.querySelector('#signInOutBtn');
-const menuCategory = document.querySelectorAll('.menu-categories li');
-const tabMenuCategory = document.querySelectorAll('.tab-menu-categories li');
+const menuCategories = document.querySelectorAll('.menu-categories li');
+const tabMenuCategories = document.querySelectorAll('.tab-menu-categories li');
 const tabMenuContent = document.querySelectorAll('.tab-menu-content');
 let superAdmin = ['jongwook2.kim@gmail.com', 'jong-wook@naver.com']; // 관리자 권한 이메일 설정
 let isSuperAdmin, isModalBg = false;
@@ -49,12 +50,7 @@ function modal(title, contents) { // 모달 함수
     //     modalClose();
     // });
 
-    isModalBg = true;
-    document.addEventListener('mousewheel', (e) => {
-        if (isModalBg && document.querySelector('#modalBg').classList.contains('modal-bg')) { // scroll시 header가 움직이므로 버그 현상 막기 위함
-            header.removeAttribute('id');
-        }
-    });
+    headerFix();
 }
 
 function modalClose() { // 모달 닫기 함수
@@ -80,18 +76,22 @@ function windowPopup(contents, cancelBtn) { // alert, confirm창 함수
 
     document.body.insertAdjacentHTML('beforeend', popupHtml);
 
-    isModalBg = true;
-
-    document.addEventListener('mousewheel', (e) => {
-        if (isModalBg && document.querySelector('#popupBg').classList.contains('popup-bg')) { // scroll시 header가 움직이므로 버그 현상 막기 위함
-            header.removeAttribute('id');
-        }
-    });
+    headerFix();
 
     document.querySelector('#windowPopupCancel, #windowPopupOk').addEventListener('click', () => { // alert, confirm창 취소/확인
         isModalBg = false;
         document.querySelector('#popupBg').remove();
         document.querySelector('.popup-wrap').remove();
+    });
+}
+
+function headerFix() { // 모달이 띄워져있을때 scroll시 header부분 고정 -> isModalBg 변수가 true일경우만
+    isModalBg = true;
+
+    document.addEventListener('mousewheel', (e) => {
+        if (isModalBg && document.querySelector('#modalBg').classList.contains('modal-bg')) {
+            headerSelector.removeAttribute('id');
+        }
     });
 }
 
@@ -116,9 +116,8 @@ document.addEventListener('mousewheel', (e) => {
     let wheelData = e.deltaY;
 
     if (wheelData > 0) { // 휠 내릴때
-        header.id = 'hideTranslate';
-        // header.classList.add('hideTranslate');
-        // header.animate(
+        headerSelector.id = 'hideTranslate';
+        // headerSelector.animate(
         //     {
         //         transform: [
         //             'translateY(0px)',
@@ -132,25 +131,46 @@ document.addEventListener('mousewheel', (e) => {
         //     }
         // );
     } else {
-        header.removeAttribute('id');
-        // header.classList.remove('hideTranslate');
+        headerSelector.removeAttribute('id');
     }
 });
+
+
+/**
+ *
+ */
+let interfaceObserver = new IntersectionObserver((e) => { // 요소를 자동적으로 감지
+    e.forEach((el) => {
+        if (el.isIntersecting) { // 화면에 요소가 보일때만
+            menuCategories.forEach((menuEl) => {
+                if (el.target.dataset.offset === menuEl.dataset.offset) {
+                    menuEl.classList.add('active');
+                } else {
+                    menuEl.classList.remove('active');
+                }
+                // el.intersectionRatio
+            });
+        }
+    });
+});
+for (let v of titleSelector) {
+    interfaceObserver.observe(v);
+}
 
 /**
  * menu offset scroll
  */
-menuCategory.forEach((el, i) => {
+menuCategories.forEach((el, i) => {
     el.addEventListener('click', (e) => {
         let menuScroll = e.target.dataset.offset;
         let menuTarget = document.querySelector(menuScroll);
 
-        menuCategory.forEach((el) => {
+        menuCategories.forEach((el) => {
             el.classList.remove('active');
         });
 
-        // menuCategory[i].className += "active";
-        menuCategory[i].classList.add('active');
+        // menuCategories[i].className += "active";
+        menuCategories[i].classList.add('active');
 
         if (menuScroll !== null) {
             menuTarget.scrollIntoView({
@@ -180,7 +200,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
          */
         document.querySelector('#portfolioSiteWriteBtn').addEventListener('click', () => {
             modal(
-                '프로젝트 등록을 해보세요 :)',
+                '프로젝트를 등록 해보세요 :)',
                 '<div class="">' +
                     '<select id="siteCategories" class="modal-select">' +
                         '<option value="" selected disabled>분류 선택</option>' +
@@ -215,6 +235,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
             let siteDescription = document.querySelector('#siteDescription');
             let siteLink = document.querySelector('#siteLink');
             let fileNameTarget = document.querySelector('.file-name');
+            // let isFile = false;
             let fileUpload;
 
             siteCategories.addEventListener('change', () => { // 분류 select box 선택된것만
@@ -241,32 +262,32 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
 
             document.querySelector('#portfolioSiteUploadBtn').addEventListener('click', () => { // 포트폴리오 사이트 등록하기
                 if (isSuperAdmin) {
-                    fileUpload.on('state_changed', null, (error) => { // 이미지 업로드 여부
-                        console.log('업로드중 실패하였습니다.\n잠시 후 다시 시도해주세요.', error.message);
-                    }, () => {
-                        fileUpload.snapshot.ref.getDownloadURL().then((url) => {
-                            console.log('정상적으로 업로드가 완료되었습니다.\n저장된 경로는', url);
+                    if (categoriesData !== '' && typeData !== '' && siteTitle.value !== '' && siteDescription.value !== '' && siteLink.value !== '' && fileUpload !== undefined) {
+                        fileUpload.on('state_changed', null, (error) => { // 이미지 업로드 여부
+                            console.log('업로드중 실패하였습니다.\n잠시 후 다시 시도해주세요.', error.message);
+                        }, () => {
+                            fileUpload.snapshot.ref.getDownloadURL().then((url) => {
+                                console.log('정상적으로 업로드가 완료되었습니다.\n저장된 경로는', url);
 
-                            let dataSave = {
-                                categories: categoriesData, // 분류값
-                                type: typeData, // 유형값
-                                title: siteTitle.value, // 제목값
-                                description: siteDescription.value, // 설명값
-                                link: siteLink.value, // 주소값
-                                imageUrl: url, // 이미지 주소값
-                            };
+                                let dataSave = {
+                                    categories: categoriesData, // 분류값
+                                    type: typeData, // 유형값
+                                    title: siteTitle.value, // 제목값
+                                    description: siteDescription.value, // 설명값
+                                    link: siteLink.value, // 주소값
+                                    imageUrl: url, // 이미지 주소값
+                                };
 
-                            if (categoriesData !== '' && typeData !== '' && siteTitle.value !== '' && siteDescription.value !== '' && siteLink.value !== '') {
-                                dbFireStore.collection('site').add(dataSave).then((result) => { // 데이터 저장 여부
-                                    console.log("성공");
+                                dbFireStore.collection('site').add(dataSave).then(() => { // 데이터 저장된거 DB에 저장
+                                    windowPopup('정상적으로 등록 되었습니다.');
                                 }).catch((error) => {
-                                    console.log(error.message);
+                                    windowPopup('등록이 실패하였습니다<br>잠시 후 다시 시도해주세요.' + error.message);
                                 });
-                            } else {
-                                windowPopup('모든 항목에 선택/입력 해주세요.');
-                            }
+                            });
                         });
-                    });
+                    } else {
+                        windowPopup('모든 항목에 선택/입력 해주세요.');
+                    }
                 } else {
                     windowPopup('관리자만 등록이 가능합니다.');
                 }
@@ -282,7 +303,7 @@ dbAuth.onAuthStateChanged((user) => { // 로그인 상태 여/부
             });
         });
     } else {
-        console.log("로그인 상태가 아닙니다");
+        console.log("로그인 상태가 아닙니다.");
 
         /**
          * portfolio sites upload
@@ -396,7 +417,7 @@ function signInUp(self) {
         }
 
         dbAuth.signInWithEmailAndPassword(userEmail.value, userPassword.value).then(result => { // 로그인 시
-            console.log(result.user);
+            // console.log(result.user);
             reload();
         }).catch(error => {
             windowPopup('회원정보가 일치하지 않습니다.<br>회원이 아니시라면 회원가입 후 이용해주세요.');
@@ -468,9 +489,9 @@ function passwordFind() {
 /**
  * portfolio sites tab menu
  */
-tabMenuCategory.forEach((el, i) => {
+tabMenuCategories.forEach((el, i) => {
    el.addEventListener('click', () =>  {
-       tabMenuCategory.forEach((el) => {
+       tabMenuCategories.forEach((el) => {
            el.classList.remove('active');
        });
 
@@ -478,7 +499,7 @@ tabMenuCategory.forEach((el, i) => {
            el.classList.remove('active');
        });
 
-       tabMenuCategory[i].classList.add('active');
+       tabMenuCategories[i].classList.add('active');
        tabMenuContent[i].classList.add('active');
    });
 });
@@ -486,8 +507,8 @@ tabMenuCategory.forEach((el, i) => {
 /**
  * use skill
  */
-useSkill.forEach((el, i) => {
-    // let dataSkill = useSkill[i].getAttribute('data-skill');
+skillBox.forEach((el, i) => {
+    // let dataSkill = skillBox[i].getAttribute('data-skill');
     let dataSkill = el.getAttribute('data-skill');
     let skillHtml = '' +
         '<div class="skill-view skill-view-'+ i +'">' +
